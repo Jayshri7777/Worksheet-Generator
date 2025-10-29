@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Worksheet Generator</title>
+    <link rel="stylesheet" href="{{ url_for('serve_static', filename='style.css') }}">
+    <!-- Add styles for hiding/showing elements -->
+    <style>
+        .hidden { display: none; }
+        .upload-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.3); }
+        .upload-section label { margin-bottom: 10px; }
+        input[type="file"] {
+            display: block; /* Make file input take its own line */
+            padding: 10px;
+            border: 1px solid rgba(50, 50, 93, 0.2);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        input[type="file"]::file-selector-button { /* Style the button part */
+            padding: 8px 12px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader overlay (unchanged) -->
+    <div id="loader" class="loader-overlay" style="display: none;">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- Main container -->
+    <div class="container">
+        <h1>Math Worksheet Generator <span class="brain-emoji">🧠</span></h1>
+
+        <!-- *** MODIFIED Form for file upload *** -->
+        <form id="worksheet-form" class="glass-form" enctype="multipart/form-data">
+            <!-- Section for Manual Input Fields -->
+            <div id="manual-fields">
+                <div class="form-group-wrapper">
+                    <div class="form-group">
+                        <label for="grade">Grade:</label>
+                        <select id="grade" name="grade">
+                            <option value="1">1</option> <option value="2">2</option> <option value="3">3</option>
+                            <option value="4">4</option> <option value="5">5</option> <option value="6">6</option>
+                            <option value="7">7</option> <option value="8">8</option> <option value="9">9</option>
+                            <option value="10">10</option> <option value="11">11</option> <option value="12">12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="board">Board:</label>
+                        <input type="text" id="board" name="board" placeholder="Ex: CBSE, ICSE etc">
+                    </div>
+                    <div class="form-group">
+                        <label for="topic">Topic:</label>
+                        <input list="topics" id="topic" name="topic" placeholder="Type or select a topic">
+                        <datalist id="topics">
+                            <option value="Algebra"></option> <option value="Geometry"></option> <option value="Trigonometry"></option>
+                            <option value="Calculus"></option> <option value="Arithmetic"></option>
+                        </datalist>
+                    </div>
+                    <div class="form-group">
+                        <label for="subtopic">Sub-Topic:</label>
+                        <input list="subtopics" type="text" id="subtopic" name="subtopic" placeholder="Type or select a sub-topic if none then NA">
+                        <datalist id="subtopics"></datalist>
+                    </div>
+                     <div class="form-group">
+                        <label for="difficulty">Difficulty:</label>
+                        <select id="difficulty" name="difficulty">
+                            <option value="easy">Easy</option> <option value="medium">Medium</option> <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- End Manual Input Section -->
+
+            <!-- *** NEW: Upload Section *** -->
+            <div class="upload-section">
+                <label for="worksheet_file"><b>Or Upload Existing Worksheet (PDF/DOCX):</b></label>
+                <input type="file" id="worksheet_file" name="worksheet_file" accept=".pdf,.docx">
+                <small>If you upload a file, the fields above will be ignored, and an answer key will be included.</small>
+            </div>
+            <!-- *** End Upload Section *** -->
+
+            <!-- Common Fields (Download Format, Answer Key, Buttons) -->
+            <div class="form-group-wrapper" style="margin-top: 20px;">
+                <div class="form-group">
+                    <label for="format">Download New Worksheet as:</label>
+                    <select id="format" name="format">
+                        <option value="pdf">PDF</option> <option value="docx">DOCX</option> <option value="txt">TXT</option>
+                        <option value="png">PNG</option> <option value="jpg">JPG</option>
+                    </select>
+                </div>
+                <div class="form-group full-width checkbox-group">
+                    <input type="checkbox" id="answer-key" name="answer-key" value="true">
+                    <label for="answer-key">Include Answer Key</label>
+                    <!-- Note: JS will check/disable this if file is uploaded -->
+                </div>
+            </div>
+
+            <button type="submit" id="generate-btn">Generate Worksheet</button>
+            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+        </form>
+    </div>
+    <script src="{{ url_for('serve_static', filename='app.js') }}"></script>
+</body>
+</html>
+

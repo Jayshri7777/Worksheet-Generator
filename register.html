@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Math Worksheet Generator</title>
+    <!-- Link CSS using url_for -->
+    <link rel="stylesheet" href="{{ url_for('serve_static', filename='style.css') }}">
+    <!-- Add styles specific to auth pages -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Ensure Inter font is used */
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0; /* Add padding for scroll */
+            box-sizing: border-box;
+        }
+        .container {
+             width: 100%;
+             padding: 20px;
+             box-sizing: border-box;
+         }
+        .auth-container {
+            max-width: 500px; /* Wider */
+            margin: 40px auto;
+        }
+        .glass-form {
+            background: rgba(255, 255, 255, 0.2); /* Slightly more opaque */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 30px 40px; /* Adjust padding */
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+        }
+        .auth-form h1 {
+            font-size: 2.2em; /* Larger title */
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px; /* More space below title */
+        }
+        .form-group {
+            margin-bottom: 20px; /* Spacing */
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #3a3a3a; /* Darker labels */
+            margin-bottom: 8px; /* Space between label and input */
+        }
+         /* --- Specific Input Styles --- */
+         .form-group input[type="text"],
+         .form-group input[type="email"],
+         .form-group input[type="tel"],
+         .form-group input[type="password"],
+         .form-group select {
+             width: 100%;
+             padding: 12px 15px; /* Comfortable padding */
+             border: 1px solid rgba(50, 50, 93, 0.2); /* Subtle border */
+             border-radius: 8px; /* Rounded corners */
+             background-color: rgba(255, 255, 255, 0.7); /* More solid background */
+             font-size: 1rem;
+             color: #333;
+             box-sizing: border-box; /* Include padding and border in width */
+             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+         }
+         .form-group input:focus,
+         .form-group select:focus {
+             outline: none;
+             border-color: #007bff; /* Highlight focus */
+             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
+         }
+         .form-group input::placeholder {
+             color: #888;
+         }
+         /* --- End Input Styles --- */
+
+         /* --- Phone Input Group Styling --- */
+         .phone-input-group {
+             display: flex;
+             gap: 10px; /* Space between country code and number */
+         }
+         .phone-input-group select {
+             width: 110px; /* Adjusted width */
+             flex-shrink: 0; /* Prevent shrinking */
+             appearance: none; /* Custom dropdown arrow styling */
+             background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23555'%3E%3Cpath%20d='M7%2010l5%205%205-5H7z'/%3E%3C/svg%3E");
+             background-repeat: no-repeat;
+             background-position: right 10px center;
+             background-size: 1.2em;
+             padding-right: 30px; /* Space for arrow */
+         }
+         .phone-input-group input[type="tel"] {
+             flex-grow: 1; /* Allow main number input to fill space */
+             width: auto; /* Override default width */
+         }
+         /* --- End Phone Input Group --- */
+
+         small {
+             display: block;
+             margin-top: 6px; /* Space above small text */
+             font-size: 0.85em; /* Slightly larger */
+             color: #555;
+         }
+         button[type="submit"], .oauth-button { /* Style OAuth buttons similarly */
+             width: 100%;
+             padding: 12px;
+             background-color: #007bff;
+             color: white;
+             border: none;
+             border-radius: 8px;
+             font-size: 1.1em;
+             font-weight: 600;
+             cursor: pointer;
+             transition: background-color 0.3s ease;
+             margin-top: 15px; /* Consistent margin */
+             text-align: center;
+             display: block;
+             text-decoration: none;
+             box-sizing: border-box;
+         }
+         button[type="submit"]:hover, .oauth-button:hover {
+             background-color: #0056b3;
+         }
+        .oauth-button.google {
+             background-color: #db4437; /* Google Red */
+             margin-top: 15px; /* Space between login/register and Google button */
+        }
+        .oauth-button.google:hover {
+             background-color: #c33d2e;
+        }
+        .divider { /* Style for OR divider */
+            text-align: center;
+            margin: 25px 0; /* More vertical space */
+            color: #555;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+         .flash-messages { list-style: none; padding: 0; margin-bottom: 20px; }
+         .flash-messages li { padding: 10px 15px; margin-bottom: 10px; border-radius: 8px; font-weight: bold; }
+         .flash-messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
+         .flash-messages .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;}
+         .flash-messages .danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+         .flash-messages .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb;}
+         .auth-switch {
+              text-align: center;
+              margin-top: 25px; /* More space */
+              color: #444;
+          }
+         .auth-switch a {
+              color: #007bff;
+              text-decoration: none;
+              font-weight: 600;
+          }
+         .auth-switch a:hover {
+              text-decoration: underline;
+          }
+    </style>
+</head>
+<body>
+    <div class="container auth-container">
+        <!-- Display Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}" class="glass-form auth-form">
+            <h1>Create Account</h1>
+
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email address">
+            </div>
+
+            <!-- Modified Phone Number Group -->
+            <div class="form-group">
+                <label for="phone_number_main">Phone Number:</label>
+                <div class="phone-input-group">
+                     <select id="country_code" name="country_code" required>
+                         <option value="+91">+91 (India)</option>
+                         <option value="+1">+1 (USA/Canada)</option>
+                         <option value="+44">+44 (UK)</option>
+                         <option value="+61">+61 (Australia)</option>
+                         <!-- Add more country codes as needed -->
+                         <option value="">Other</option> <!-- Option if code not listed -->
+                     </select>
+                     <input type="tel" id="phone_number_main" name="phone_number_main" required placeholder="Enter phone number">
+                </div>
+                 <small>Enter number without country code. Min 7 digits.</small>
+            </div>
+            <!-- End Modified Phone Number Group -->
+
+            <div class="form-group">
+                <label for="grade">Grade (Optional):</label>
+                <input type="text" id="grade" name="grade" placeholder="e.g., 10th, College">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required
+                       minlength="8"
+                       pattern="^(?!.*\s)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+=\-\[\]{};'\\:&quot;|,.<>\/?~`]).{8,}$"
+                       title="Min 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 special char, no spaces.">
+                 <small>Min 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 special char, no spaces.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required minlength="8">
+            </div>
+
+            <button type="submit">Register</button>
+
+            <!-- Divider -->
+            <div class="divider">OR</div>
+
+            <!-- Google Login/Register Button -->
+            <a href="{{ url_for('login_google') }}" class="oauth-button google">Continue with Google</a>
+             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+
+            <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        </form>
+    </div>
+</body>
+</html>
+
